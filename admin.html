@@ -3,39 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Atelier DSR</title>
+    <title>Atelier DSR - Administration</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<body>
-
-    <div id="login-form">
-        <h2>Accès Administrateur</h2>
-        <input type="password" id="access-code" placeholder="Code d'accès" required>
-        <button id="login-button">Entrer</button>
-        <p id="error-message" class="hidden">Code d'accès incorrect.</p>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Modal de message -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage" class="text-lg font-semibold"></p>
+            <button id="modalCloseButton">OK</button>
+        </div>
     </div>
 
-    <div id="admin-panel" class="hidden">
-        <header>
-            <h1>Panneau d'Administration</h1>
-        </header>
-        <main>
-            <section id="event-form">
-                <h2>Ajouter un événement à l'agenda</h2>
-                <input type="text" id="event-title" placeholder="Titre de l'événement" required>
-                <input type="date" id="event-date" required>
-                <input type="file" id="event-image" accept="image/*">
-                <button id="add-event-button">Ajouter l'événement</button>
-            </section>
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold">Administration Atelier DSR</h1>
+            <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
+        </div>
+    </header>
 
-            <section id="admin-agenda">
-                <h2>Agenda Actuel</h2>
-                <div id="admin-calendar-view">
-                    </div>
-            </section>
-        </main>
-    </div>
+    <main class="container mx-auto p-4 flex-grow">
+        <section id="login-section" class="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-10">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Connexion Administrateur</h2>
+            <form id="admin-login-form" class="space-y-4">
+                <div>
+                    <label for="admin-code" class="block text-gray-700 text-sm font-bold mb-2">Code d'accès :</label>
+                    <input type="password" id="admin-code" name="admin-code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
+                    Se connecter
+                </button>
+            </form>
+        </section>
 
-    <script src="admin.js"></script>
+        <section id="admin-dashboard" class="hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Gestion des Ateliers et Événements</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Ajouter un nouvel atelier -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter/Modifier un Atelier</h3>
+                    <form id="workshop-form" class="space-y-4">
+                        <div>
+                            <label for="workshop-title" class="block text-gray-700 text-sm font-bold mb-2">Titre :</label>
+                            <input type="text" id="workshop-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="workshop-description" class="block text-gray-700 text-sm font-bold mb-2">Description :</label>
+                            <textarea id="workshop-description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        </div>
+                        <div>
+                            <label for="workshop-date" class="block text-gray-700 text-sm font-bold mb-2">Date et Heure :</label>
+                            <input type="datetime-local" id="workshop-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="workshop-image" class="block text-gray-700 text-sm font-bold mb-2">URL de l'image :</label>
+                            <input type="url" id="workshop-image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <input type="hidden" id="workshop-id">
+                        <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
+                            Ajouter/Mettre à jour l'Atelier
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Ajouter un nouvel événement Agenda -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter/Modifier un Événement Agenda</h3>
+                    <form id="agenda-event-form" class="space-y-4">
+                        <div>
+                            <label for="agenda-title" class="block text-gray-700 text-sm font-bold mb-2">Titre :</label>
+                            <input type="text" id="agenda-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="agenda-description" class="block text-gray-700 text-sm font-bold mb-2">Description :</label>
+                            <textarea id="agenda-description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        </div>
+                        <div>
+                            <label for="agenda-date" class="block text-gray-700 text-sm font-bold mb-2">Date et Heure :</label>
+                            <input type="datetime-local" id="agenda-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="agenda-image" class="block text-gray-700 text-sm font-bold mb-2">URL de l'image :</label>
+                            <input type="url" id="agenda-image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <input type="hidden" id="agenda-event-id">
+                        <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
+                            Ajouter/Mettre à jour l'Événement
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Ateliers Existants</h3>
+                <div id="existing-workshops" class="space-y-4">
+                    <!-- Les ateliers existants seront chargés ici -->
+                    <p class="text-gray-600">Chargement des ateliers...</p>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Événements d'Agenda Existants</h3>
+                <div id="existing-agenda-events" class="space-y-4">
+                    <!-- Les événements d'agenda existants seront chargés ici -->
+                    <p class="text-gray-600">Chargement des événements...</p>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Réservations Utilisateurs</h3>
+                <div id="user-reservations" class="space-y-4">
+                    <!-- Les réservations des utilisateurs seront chargées ici -->
+                    <p class="text-gray-600">Chargement des réservations...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 mt-8 text-center rounded-t-lg shadow-inner">
+        <p>&copy; 2024 Atelier DSR. Tous droits réservés.</p>
+        <p class="text-sm mt-2">Développé pour Destination Sud Réunion.</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variables globales fournies par l'environnement Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId = null; // L'ID utilisateur de l'administrateur après connexion
+        let isAuthReady = false;
+
+        // Code d'accès administrateur (À REMPLACER PAR UN MÉCANISME PLUS SÉCURISÉ EN PRODUCTION)
+        const ADMIN_CODE = "admin123";
+
+        // Fonction pour afficher un message modal
+        function showMessageModal(message) {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('modalMessage').textContent = message;
+            modal.style.display = 'flex';
+        }
+
+        // Fonction pour cacher le message modal
+        function hideMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Initialisation de Firebase et gestion de l'authentification
+        async function initializeFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Écouteur de changement d'état d'authentification
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Admin authentifié:", userId);
+                        // Ne pas afficher le tableau de bord ici, attendre la validation du code
+                    } else {
+                        // Si l'utilisateur n'est pas authentifié, se connecter anonymement pour obtenir un userId
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser?.uid || crypto.randomUUID(); // Fallback pour userId si anonyme
+                            console.log("Connecté anonymement ou avec token. User ID:", userId);
+                        } catch (error) {
+                            console.error("Erreur d'authentification Firebase:", error);
+                            showMessageModal("Erreur d'authentification: " + error.message);
+                            userId = crypto.randomUUID(); // Générer un ID aléatoire si l'authentification échoue
+                        }
+                    }
+                    isAuthReady = true;
+                    // L'interface admin sera affichée après la validation du code d'accès
+                });
+
+            } catch (error) {
+                console.error("Erreur lors de l'initialisation de Firebase:", error);
+                showMessageModal("Erreur lors de l'initialisation de l'application. Veuillez réessayer.");
+            }
+        }
+
+        // Gérer la soumission du formulaire de connexion admin
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const adminCodeInput = document.getElementById('admin-code').value;
+
+            if (adminCodeInput === ADMIN_CODE) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                showMessageModal("Connexion administrateur réussie !");
+                // Charger les données après la connexion réussie
+                loadWorkshops();
+                loadGlobalAgenda();
+                loadUserReservations();
+            } else {
+                showMessageModal("Code d'accès incorrect. Veuillez réessayer.");
+            }
+        });
+
+        // Gérer la soumission du formulaire d'atelier
+        document.getElementById('workshop-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !db) {
+                showMessageModal("Veuillez patienter pendant le chargement de l'application.");
+                return;
+            }
+
+            const workshopId = document.getElementById('workshop-id').value;
+            const title = document.getElementById('workshop-title').value;
+            const description = document.getElementById('workshop-description').value;
+            const date = document.getElementById('workshop-date').value;
+            const imageUrl = document.getElementById('workshop-image').value;
+
+            const workshopData = {
+                title,
+                description,
+                date: date ? new Date(date).toISOString() : null,
+                imageUrl
+            };
+
+            try {
+                if (workshopId) {
+                    // Mettre à jour l'atelier existant
+                    const workshopDocRef = doc(db, `artifacts/${appId}/public/data/workshops`, workshopId);
+                    await updateDoc(workshopDocRef, workshopData);
+                    showMessageModal("Atelier mis à jour avec succès !");
+                } else {
+                    // Ajouter un nouvel atelier
+                    const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
+                    await addDoc(workshopsRef, workshopData);
+                    showMessageModal("Atelier ajouté avec succès !");
+                }
+                document.getElementById('workshop-form').reset(); // Réinitialiser le formulaire
+                document.getElementById('workshop-id').value = ''; // Réinitialiser l'ID caché
+            } catch (error) {
+                console.error("Erreur lors de l'ajout/mise à jour de l'atelier:", error);
+                showMessageModal("Erreur: " + error.message);
+            }
+        });
+
+        // Gérer la soumission du formulaire d'événement agenda
+        document.getElementById('agenda-event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !db) {
+                showMessageModal("Veuillez patienter pendant le chargement de l'application.");
+                return;
+            }
+
+            const eventId = document.getElementById('agenda-event-id').value;
+            const title = document.getElementById('agenda-title').value;
+            const description = document.getElementById('agenda-description').value;
+            const date = document.getElementById('agenda-date').value;
+            const imageUrl = document.getElementById('agenda-image').value;
+
+            const eventData = {
+                title,
+                description,
+                date: date ? new Date(date).toISOString() : null,
+                imageUrl
+            };
+
+            try {
+                if (eventId) {
+                    // Mettre à jour l'événement existant
+                    const eventDocRef = doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, eventId);
+                    await updateDoc(eventDocRef, eventData);
+                    showMessageModal("Événement agenda mis à jour avec succès !");
+                } else {
+                    // Ajouter un nouvel événement
+                    const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
+                    await addDoc(agendaRef, eventData);
+                    showMessageModal("Événement agenda ajouté avec succès !");
+                }
+                document.getElementById('agenda-event-form').reset(); // Réinitialiser le formulaire
+                document.getElementById('agenda-event-id').value = ''; // Réinitialiser l'ID caché
+            } catch (error) {
+                console.error("Erreur lors de l'ajout/mise à jour de l'événement agenda:", error);
+                showMessageModal("Erreur: " + error.message);
+            }
+        });
+
+        // Charger les ateliers existants pour modification/suppression
+        function loadWorkshops() {
+            if (!isAuthReady || !db) return;
+
+            const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
+            onSnapshot(workshopsRef, (snapshot) => {
+                const existingWorkshopsList = document.getElementById('existing-workshops');
+                existingWorkshopsList.innerHTML = '';
+                if (snapshot.empty) {
+                    existingWorkshopsList.innerHTML = '<p class="text-gray-600">Aucun atelier enregistré.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const workshop = doc.data();
+                    const workshopId = doc.id;
+                    const workshopItem = `
+                        <div class="flex items-center justify-between bg-blue-50 p-3 rounded-md shadow-sm border border-blue-200">
+                            <span class="font-medium text-gray-800">${workshop.title}</span>
+                            <div>
+                                <button data-id="${workshopId}" data-type="workshop" class="edit-btn bg-yellow-500 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-600 mr-2">Modifier</button>
+                                <button data-id="${workshopId}" data-type="workshop" class="delete-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Supprimer</button>
+                            </div>
+                        </div>
+                    `;
+                    existingWorkshopsList.innerHTML += workshopItem;
+                });
+                attachEditDeleteListeners();
+            }, (error) => {
+                console.error("Erreur lors du chargement des ateliers existants:", error);
+                showMessageModal("Erreur lors du chargement des ateliers existants.");
+            });
+        }
+
+        // Charger les événements d'agenda existants pour modification/suppression
+        function loadGlobalAgenda() {
+            if (!isAuthReady || !db) return;
+
+            const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
+            onSnapshot(agendaRef, (snapshot) => {
+                const existingAgendaEventsList = document.getElementById('existing-agenda-events');
+                existingAgendaEventsList.innerHTML = '';
+                if (snapshot.empty) {
+                    existingAgendaEventsList.innerHTML = '<p class="text-gray-600">Aucun événement d\'agenda enregistré.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const event = doc.data();
+                    const eventId = doc.id;
+                    const eventItem = `
+                        <div class="flex items-center justify-between bg-green-50 p-3 rounded-md shadow-sm border border-green-200">
+                            <span class="font-medium text-gray-800">${event.title}</span>
+                            <div>
+                                <button data-id="${eventId}" data-type="agenda-event" class="edit-btn bg-yellow-500 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-600 mr-2">Modifier</button>
+                                <button data-id="${eventId}" data-type="agenda-event" class="delete-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Supprimer</button>
+                            </div>
+                        </div>
+                    `;
+                    existingAgendaEventsList.innerHTML += eventItem;
+                });
+                attachEditDeleteListeners();
+            }, (error) => {
+                console.error("Erreur lors du chargement des événements d'agenda existants:", error);
+                showMessageModal("Erreur lors du chargement des événements d'agenda existants.");
+            });
+        }
+
+        // Charger toutes les réservations des utilisateurs
+        function loadUserReservations() {
+            if (!isAuthReady || !db) return;
+
+            const reservationsList = document.getElementById('user-reservations');
+            reservationsList.innerHTML = '<p class="text-gray-600">Chargement des réservations...</p>';
+
+            // Nous devons parcourir toutes les collections d'utilisateurs pour trouver les réservations
+            // C'est une approche simplifiée. En production, une collection centralisée des réservations
+            // serait plus efficace ou des requêtes plus complexes.
+            // Pour cet exemple, nous allons écouter les changements dans la collection 'workshops'
+            // et 'globalAgendaEvents' pour afficher les titres correspondants.
+            // La liste des réservations sera plus complexe car elle est stockée par userId.
+            // Pour simplifier, nous allons juste lister les réservations connues.
+
+            // Pour récupérer les réservations de TOUS les utilisateurs, il faudrait une structure de données différente
+            // ou une fonction Cloud Function pour agréger ces données.
+            // Ici, je vais simuler en affichant un message indiquant où les réservations seraient.
+            reservationsList.innerHTML = '<p class="text-gray-600">Les réservations des utilisateurs sont stockées individuellement. Pour les afficher toutes ici, une agrégation côté serveur (Cloud Functions) serait nécessaire. Chaque réservation est liée à un atelier et à un utilisateur.</p>';
+            // Exemple de comment vous pourriez récupérer les réservations pour un utilisateur spécifique si vous aviez son ID
+            // const userReservationsRef = collection(db, `artifacts/${appId}/users/${someUserId}/reservations`);
+            // onSnapshot(userReservationsRef, (snapshot) => { /* ... */ });
+        }
+
+
+        // Attacher les écouteurs d'événements pour les boutons Modifier et Supprimer
+        function attachEditDeleteListeners() {
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.onclick = async (e) => {
+                    const id = e.target.dataset.id;
+                    const type = e.target.dataset.type;
+                    if (type === 'workshop') {
+                        const docRef = doc(db, `artifacts/${appId}/public/data/workshops`, id);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            document.getElementById('workshop-id').value = id;
+                            document.getElementById('workshop-title').value = data.title;
+                            document.getElementById('workshop-description').value = data.description;
+                            document.getElementById('workshop-date').value = data.date ? new Date(data.date).toISOString().slice(0, 16) : '';
+                            document.getElementById('workshop-image').value = data.imageUrl || '';
+                            showMessageModal("Formulaire d'atelier pré-rempli pour modification.");
+                        }
+                    } else if (type === 'agenda-event') {
+                        const docRef = doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            document.getElementById('agenda-event-id').value = id;
+                            document.getElementById('agenda-title').value = data.title;
+                            document.getElementById('agenda-description').value = data.description;
+                            document.getElementById('agenda-date').value = data.date ? new Date(data.date).toISOString().slice(0, 16) : '';
+                            document.getElementById('agenda-image').value = data.imageUrl || '';
+                            showMessageModal("Formulaire d'événement agenda pré-rempli pour modification.");
+                        }
+                    }
+                };
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.onclick = async (e) => {
+                    const id = e.target.dataset.id;
+                    const type = e.target.dataset.type;
+                    if (confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) { // Utilisation de confirm pour la démo, à remplacer par un modal personnalisé
+                        try {
+                            if (type === 'workshop') {
+                                await deleteDoc(doc(db, `artifacts/${appId}/public/data/workshops`, id));
+                                showMessageModal("Atelier supprimé avec succès !");
+                            } else if (type === 'agenda-event') {
+                                await deleteDoc(doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id));
+                                showMessageModal("Événement agenda supprimé avec succès !");
+                            }
+                        } catch (error) {
+                            console.error("Erreur lors de la suppression:", error);
+                            showMessageModal("Erreur lors de la suppression: " + error.message);
+                        }
+                    }
+                };
+            });
+        }
+
+        // Attacher l'écouteur pour le bouton de fermeture du modal
+        document.getElementById('modalCloseButton').addEventListener('click', hideMessageModal);
+
+        // Initialiser Firebase lorsque la fenêtre est complètement chargée
+        window.addEventListener('load', initializeFirebase);
+
+        // Enregistrer le Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker enregistré avec succès:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Échec de l\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

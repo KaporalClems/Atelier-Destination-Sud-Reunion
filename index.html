@@ -6,42 +6,49 @@
     <title>Atelier DSR - Utilisateur</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <!-- Chargement de Tailwind CSS pour un style rapide et responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement de la police Inter depuis Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Définition de la police par défaut pour le corps du document */
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Les styles spécifiques au menu hamburger sont maintenant dans style.css */
-        /* Les styles spécifiques au calendrier sont maintenant dans style.css */
+        /* Les styles spécifiques au menu hamburger et au calendrier sont définis dans style.css */
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
     <!-- Carrousel d'images en arrière-plan -->
+    <!-- Ce div contiendra les images du carrousel gérées par JavaScript -->
     <div class="carousel-background" id="user-carousel-background">
         <!-- Les images seront chargées ici par JavaScript -->
     </div>
 
-    <!-- Écran de chargement -->
-    <div id="loading-screen">
-        <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="w-32 h-32 mb-4 logo-animation">
+    <!-- Écran de chargement (visible au démarrage, caché après initialisation) -->
+    <div id="loading-screen" class="fixed inset-0 bg-white flex flex-col justify-center items-center z-50 transition-opacity duration-1000 ease-out">
+        <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="w-32 h-32 mb-4 animate-bounce">
         <div class="spinner"></div>
-        <p class="text-gray-700 text-lg">Chargement de l'Atelier DSR...</p>
+        <p class="text-gray-700 text-lg mt-4">Chargement de l'Atelier DSR...</p>
     </div>
 
-    <!-- Modal de message -->
-    <div id="messageModal" class="modal-overlay">
+    <!-- Modal de message (utilisé pour les alertes et confirmations personnalisées) -->
+    <div id="messageModal" class="modal-overlay hidden">
         <div class="modal-content">
-            <p id="modalMessage" class="text-lg font-semibold"></p>
-            <button id="modalCloseButton">OK</button>
+            <p id="modalMessage" class="text-lg font-semibold mb-4"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="modalConfirmButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Oui</button>
+                <button id="modalCloseButton" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition">Non</button>
+            </div>
         </div>
     </div>
 
-    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg bg-opacity-80">
-        <div class="container mx-auto flex justify-between items-center relative">
-            <!-- Menu Hamburger et Logo à gauche -->
+    <!-- En-tête de l'application -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg bg-opacity-80 relative z-10">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            <!-- Conteneur pour le menu hamburger et le logo, aligné à gauche -->
             <div class="flex items-center space-x-4">
-                <div class="hamburger-menu" id="hamburger-menu">
+                <div class="hamburger-menu md:hidden" id="hamburger-menu">
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
@@ -49,32 +56,36 @@
                 <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
             </div>
 
-            <h1 class="text-3xl font-bold text-center flex-grow md:flex-none">Atelier DSR</h1>
+            <!-- Titre de l'application, centré sur les grands écrans, prend de la place sur les petits -->
+            <h1 class="text-3xl font-bold text-center flex-grow md:flex-none order-first md:order-none w-full md:w-auto mt-2 md:mt-0">Atelier DSR</h1>
             
             <!-- Liens de navigation (cachés sur mobile, affichés via hamburger) -->
-            <nav id="nav-links" class="nav-links">
-                <a href="admin.html" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Administration</a>
+            <nav id="nav-links" class="nav-links hidden md:flex flex-col md:flex-row md:space-x-4 w-full md:w-auto mt-4 md:mt-0">
+                <a href="admin.html" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium text-center">Administration</a>
                 <!-- Tu peux ajouter d'autres liens ici si nécessaire -->
             </nav>
         </div>
     </header>
 
+    <!-- Contenu principal de l'application -->
     <main class="container mx-auto p-4 flex-grow bg-white bg-opacity-90 rounded-lg shadow-xl my-8">
+        <!-- Section des ateliers -->
         <section id="workshops" class="mb-8 p-4 md:p-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Nos Ateliers</h2>
-            <div id="workshops-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Les ateliers seront chargés ici par app.js -->
+            <div id="workshops-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Les ateliers seront chargés ici par JavaScript -->
                 <p class="text-gray-600">Chargement des ateliers...</p>
             </div>
         </section>
 
+        <!-- Section de l'agenda global -->
         <section id="global-agenda" class="p-4 md:p-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Agenda Global des Ateliers</h2>
             <div class="calendar-container">
                 <div class="calendar-header">
-                    <button id="prevMonth">Mois précédent</button>
-                    <h3 id="currentMonthYear" class="text-xl font-semibold text-gray-800"></h3>
-                    <button id="nextMonth">Mois suivant</button>
+                    <button id="prevMonth" class="px-4 py-2 text-sm">Mois précédent</button>
+                    <h3 id="currentMonthYear" class="text-xl font-semibold text-gray-800 text-center flex-grow"></h3>
+                    <button id="nextMonth" class="px-4 py-2 text-sm">Mois suivant</button>
                 </div>
                 <div id="calendar-grid" class="calendar-grid">
                     <!-- Les noms des jours de la semaine -->
@@ -85,12 +96,13 @@
                     <div class="calendar-day-name">Ven</div>
                     <div class="calendar-day-name">Sam</div>
                     <div class="calendar-day-name">Dim</div>
-                    <!-- Les jours du calendrier seront générés ici -->
+                    <!-- Les jours du calendrier seront générés ici par JavaScript -->
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- Pied de page -->
     <footer class="bg-gray-800 text-white p-4 mt-8 text-center rounded-t-lg shadow-inner bg-opacity-80">
         <p>&copy; <span id="current-year"></span> Atelier DSR. Tous droits réservés.</p>
         <p class="text-sm mt-2">Développé pour Destination Sud Réunion.</p>
@@ -98,12 +110,15 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
+        // Importation des modules Firebase nécessaires
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Variables globales fournies par l'environnement Canvas
+        // __app_id est l'identifiant de l'application fourni par l'environnement
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // __firebase_config contient la configuration Firebase sous forme de chaîne JSON
         let firebaseConfig = {};
         try {
             firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
@@ -111,20 +126,22 @@
             console.error("Erreur lors du parsing de __firebase_config:", e);
             showMessageModal("Erreur de configuration Firebase. Veuillez contacter l'administrateur.");
         }
+        // __initial_auth_token est un jeton d'authentification personnalisé, s'il est fourni
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        // Variables globales pour les instances Firebase
         let app;
         let db;
         let auth;
-        let userId = null;
-        let isAuthReady = false;
+        let userId = null; // ID de l'utilisateur actuellement connecté
+        let isAuthReady = false; // Indicateur que l'authentification Firebase est prête
 
-        // Variables pour le calendrier
+        // Variables pour la gestion du calendrier
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
-        let allAgendaEvents = []; // Cache for all events
+        let allAgendaEvents = []; // Cache pour stocker tous les événements de l'agenda
 
-        // Images pour le carrousel de l'utilisateur
+        // Images pour le carrousel en arrière-plan
         const CAROUSEL_IMAGES = [
             "https://www.sudreuniontourisme.fr/fileadmin/_processed_/e/7/csm_plagestpierre_6d8d01c749.jpg",
             "https://www.sudreuniontourisme.fr/fileadmin/_processed_/e/d/csm_grandeanse_08fc85f413.jpg",
@@ -132,27 +149,70 @@
             "https://www.sudreuniontourisme.fr/fileadmin/_processed_/a/8/csm_foret_tevelave_c152cf6493.jpg",
             "https://www.sudreuniontourisme.fr/fileadmin/_processed_/3/a/csm_fenetremakesreunion_de8b1a11d6.jpg"
         ];
-        let currentImageIndex = 0;
+        let currentImageIndex = 0; // Index de l'image actuellement affichée dans le carrousel
 
-        // Fonction pour afficher un message modal
-        function showMessageModal(message) {
-            const modal = document.getElementById('messageModal');
-            document.getElementById('modalMessage').textContent = message;
-            modal.style.display = 'flex';
+        /**
+         * Affiche un message dans un modal personnalisé.
+         * @param {string} message - Le message à afficher.
+         * @param {boolean} isConfirm - Indique si le modal est une confirmation (avec boutons Oui/Non).
+         * @returns {Promise<boolean>} - Une promesse qui se résout à true si "Oui" est cliqué, false sinon.
+         */
+        function showMessageModal(message, isConfirm = false) {
+            return new Promise(resolve => {
+                const modal = document.getElementById('messageModal');
+                const modalMessage = document.getElementById('modalMessage');
+                const modalCloseButton = document.getElementById('modalCloseButton');
+                const modalConfirmButton = document.getElementById('modalConfirmButton');
+
+                modalMessage.textContent = message;
+
+                if (isConfirm) {
+                    modalConfirmButton.classList.remove('hidden');
+                    modalCloseButton.textContent = "Non";
+                    modalConfirmButton.onclick = () => {
+                        modal.classList.add('hidden');
+                        modalConfirmButton.classList.add('hidden');
+                        resolve(true);
+                    };
+                    modalCloseButton.onclick = () => {
+                        modal.classList.add('hidden');
+                        modalConfirmButton.classList.add('hidden');
+                        resolve(false);
+                    };
+                } else {
+                    modalConfirmButton.classList.add('hidden');
+                    modalCloseButton.textContent = "OK";
+                    modalCloseButton.onclick = () => {
+                        modal.classList.add('hidden');
+                        resolve(true); // Résout à true par défaut pour un simple message OK
+                    };
+                }
+                modal.classList.remove('hidden');
+            });
         }
 
-        // Fonction pour cacher le message modal
-        function hideMessageModal() {
-            document.getElementById('modalMessage').style.display = 'none';
+        /**
+         * Cache l'écran de chargement.
+         */
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('opacity-0'); // Déclenche la transition d'opacité
+                // Supprime l'élément du DOM après la transition pour libérer les ressources
+                loadingScreen.addEventListener('transitionend', () => loadingScreen.remove());
+            }
         }
 
-        // Initialisation de Firebase et gestion de l'authentification
+        /**
+         * Initialise Firebase (App, Firestore, Auth) et gère l'authentification.
+         */
         async function initializeFirebase() {
             console.log("Début de l'initialisation de Firebase...");
             console.log("appId:", appId);
             console.log("firebaseConfig (avant vérification):", firebaseConfig);
             console.log("initialAuthToken:", initialAuthToken ? "Présent" : "Absent");
 
+            // Vérifie si la configuration Firebase est vide
             if (Object.keys(firebaseConfig).length === 0) {
                 console.error("Erreur: firebaseConfig est vide. Impossible d'initialiser Firebase.");
                 showMessageModal("Erreur: La configuration de l'application est manquante. Veuillez réessayer ou contacter l'administrateur.");
@@ -161,7 +221,9 @@
             }
 
             try {
+                // Initialisation de l'application Firebase
                 app = initializeApp(firebaseConfig);
+                // Récupération des services Firestore et Auth
                 db = getFirestore(app);
                 auth = getAuth(app);
                 console.log("Firebase App, Firestore, Auth initialisés.");
@@ -169,9 +231,11 @@
                 // Écouteur de changement d'état d'authentification
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
+                        // Si un utilisateur est connecté (anonymement ou via token)
                         userId = user.uid;
                         console.log("Utilisateur authentifié:", userId);
                     } else {
+                        // Si aucun utilisateur n'est connecté, tente une connexion anonyme ou avec le token fourni
                         console.log("Aucun utilisateur authentifié. Tentative de connexion anonyme ou avec token...");
                         try {
                             if (initialAuthToken) {
@@ -181,56 +245,57 @@
                                 console.log("Tentative de connexion anonyme.");
                                 await signInAnonymously(auth);
                             }
-                            userId = auth.currentUser?.uid || crypto.randomUUID(); // Fallback pour userId si anonyme
+                            // Met à jour l'ID utilisateur après la connexion
+                            userId = auth.currentUser?.uid || crypto.randomUUID();
                             console.log("Connecté. User ID:", userId);
                         } catch (error) {
                             console.error("Erreur d'authentification:", error);
                             showMessageModal("Erreur d'authentification: " + error.message);
-                            userId = crypto.randomUUID(); // Générer un ID aléatoire si l'authentification échoue
+                            userId = crypto.randomUUID(); // Génère un ID aléatoire si l'authentification échoue
                         }
                     }
-                    isAuthReady = true;
+                    isAuthReady = true; // L'authentification est maintenant prête
                     console.log("isAuthReady:", isAuthReady);
-                    // Une fois l'authentification prête, charger les données
+                    // Une fois l'authentification prête, charge les données et cache l'écran de chargement
                     loadWorkshops();
-                    loadGlobalAgenda(); // Maintenant charge et rend le calendrier personnalisé
-                    hideLoadingScreen(); // Cacher l'écran de chargement une fois tout chargé
+                    loadGlobalAgenda();
+                    hideLoadingScreen();
                 });
 
             } catch (error) {
                 console.error("Erreur lors de l'initialisation de Firebase (initializeApp, getFirestore, getAuth):", error);
                 showMessageModal("Erreur lors de l'initialisation de l'application. Veuillez réessayer.");
-                hideLoadingScreen(); // Cacher même en cas d'erreur
+                hideLoadingScreen();
             }
         }
 
-        // Fonction pour cacher l'écran de chargement
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen) {
-                loadingScreen.classList.add('hidden');
-                loadingScreen.addEventListener('transitionend', () => loadingScreen.remove());
-            }
-        }
-
-        // Charger les ateliers depuis Firestore
+        /**
+         * Charge les ateliers depuis Firestore et les affiche.
+         */
         function loadWorkshops() {
+            // Vérifie si Firebase est prêt avant de tenter de charger les données
             if (!isAuthReady || !db) {
                 console.log("Firebase non prêt pour charger les ateliers.");
                 return;
             }
 
+            // Référence à la collection 'workshops' dans Firestore
             const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
+            // Écoute en temps réel les changements dans la collection
             onSnapshot(workshopsRef, (snapshot) => {
                 const workshopsList = document.getElementById('workshops-list');
-                workshopsList.innerHTML = ''; // Nettoyer la liste existante
+                workshopsList.innerHTML = ''; // Nettoie la liste existante
+
                 if (snapshot.empty) {
                     workshopsList.innerHTML = '<p class="text-gray-600">Aucun atelier disponible pour le moment.</p>';
                     return;
                 }
+
+                // Pour chaque document (atelier) dans le snapshot
                 snapshot.forEach(doc => {
                     const workshop = doc.data();
                     const workshopId = doc.id;
+                    // Crée la carte d'atelier avec les données
                     const workshopCard = `
                         <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl">
                             ${workshop.imageUrl ? `<img src="${workshop.imageUrl}" alt="${workshop.title}" class="w-full h-48 object-cover">` : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">Pas d'image</div>`}
@@ -247,7 +312,7 @@
                     workshopsList.innerHTML += workshopCard;
                 });
 
-                // Attacher les écouteurs d'événements aux boutons de réservation
+                // Attache les écouteurs d'événements aux boutons de réservation après qu'ils aient été ajoutés au DOM
                 document.querySelectorAll('.reserve-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const workshopId = e.target.dataset.id;
@@ -260,20 +325,25 @@
             });
         }
 
-        // Gérer la réservation d'un atelier
+        /**
+         * Gère la réservation d'un atelier par l'utilisateur.
+         * @param {string} workshopId - L'ID de l'atelier à réserver.
+         */
         async function handleReservation(workshopId) {
+            // Vérifie si Firebase et l'utilisateur sont prêts
             if (!isAuthReady || !db || !userId) {
                 showMessageModal("Veuillez patienter pendant le chargement de l'application.");
                 return;
             }
 
             try {
-                // Créer une collection pour les réservations d'utilisateurs
+                // Référence à la collection de réservations de l'utilisateur
                 const reservationsRef = collection(db, `artifacts/${appId}/users/${userId}/reservations`);
+                // Ajoute un nouveau document de réservation
                 await addDoc(reservationsRef, {
                     workshopId: workshopId,
                     userId: userId,
-                    reservationDate: new Date().toISOString()
+                    reservationDate: new Date().toISOString() // Date de la réservation
                 });
                 showMessageModal("Réservation effectuée avec succès pour l'atelier " + workshopId + " !");
                 console.log("Réservation effectuée pour l'atelier:", workshopId, "par l'utilisateur:", userId);
@@ -283,10 +353,14 @@
             }
         }
 
-        // Fonction pour générer le calendrier
+        /**
+         * Génère et affiche le calendrier des événements.
+         */
         function renderCalendar() {
             const calendarGrid = document.getElementById('calendar-grid');
             const currentMonthYear = document.getElementById('currentMonthYear');
+            
+            // Réinitialise la grille du calendrier avec les noms des jours de la semaine
             calendarGrid.innerHTML = `
                 <div class="calendar-day-name">Lun</div>
                 <div class="calendar-day-name">Mar</div>
@@ -295,36 +369,37 @@
                 <div class="calendar-day-name">Ven</div>
                 <div class="calendar-day-name">Sam</div>
                 <div class="calendar-day-name">Dim</div>
-            `; // Réinitialiser la grille avec les noms des jours
+            `;
 
             const date = new Date(currentYear, currentMonth, 1);
-            const firstDayOfMonth = date.getDay(); // 0 for Sunday, 1 for Monday, etc.
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDayOfMonth = date.getDay(); // 0 pour dimanche, 1 pour lundi, etc.
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Nombre de jours dans le mois
             const today = new Date();
             const todayDate = today.getDate();
             const todayMonth = today.getMonth();
             const todayYear = today.getFullYear();
 
-            // Ajuster le premier jour pour qu'il commence le lundi (0 pour dimanche, 1 pour lundi...)
-            const startDayIndex = (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1); // If Sunday (0), set to end (6)
+            // Ajuste l'index du premier jour pour que la semaine commence le lundi (0 si c'est dimanche, sinon l'index - 1)
+            const startDayIndex = (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1);
 
-            // Remplir les jours vides avant le premier jour du mois
+            // Remplit les jours vides au début du mois pour aligner avec le bon jour de la semaine
             for (let i = 0; i < startDayIndex; i++) {
                 calendarGrid.innerHTML += `<div class="calendar-day"></div>`;
             }
 
-            // Remplir les jours du mois
+            // Remplit les jours du mois
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
                 dayElement.classList.add('calendar-day', 'current-month');
                 
+                // Ajoute la classe 'today' si c'est le jour actuel
                 if (day === todayDate && currentMonth === todayMonth && currentYear === todayYear) {
                     dayElement.classList.add('today');
                 }
 
                 dayElement.innerHTML = `<span class="calendar-day-number">${day}</span>`;
 
-                // Filtrer les événements pour ce jour
+                // Filtre les événements qui ont lieu ce jour-là
                 const eventsForDay = allAgendaEvents.filter(event => {
                     const eventDate = new Date(event.date);
                     return eventDate.getDate() === day &&
@@ -332,6 +407,7 @@
                            eventDate.getFullYear() === currentYear;
                 });
 
+                // Ajoute les événements au jour du calendrier
                 eventsForDay.forEach(event => {
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('calendar-event');
@@ -342,30 +418,35 @@
                 calendarGrid.appendChild(dayElement);
             }
 
+            // Met à jour le titre du mois et de l'année dans l'en-tête du calendrier
             currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
         }
 
-        // Charger les événements de l'agenda global depuis Firestore
+        /**
+         * Charge les événements de l'agenda global depuis Firestore.
+         */
         function loadGlobalAgenda() {
+            // Vérifie si Firebase est prêt
             if (!isAuthReady || !db) {
                 console.log("Firebase non prêt pour charger l'agenda.");
                 return;
             }
 
             const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
+            // Écoute en temps réel les changements
             onSnapshot(agendaRef, (snapshot) => {
-                allAgendaEvents = []; // Vider le cache
+                allAgendaEvents = []; // Vide le cache des événements
                 snapshot.forEach(doc => {
-                    allAgendaEvents.push(doc.data());
+                    allAgendaEvents.push(doc.data()); // Ajoute chaque événement au cache
                 });
-                renderCalendar(); // Re-render le calendrier avec les nouvelles données
+                renderCalendar(); // Re-rend le calendrier avec les données mises à jour
             }, (error) => {
                 console.error("Erreur lors du chargement de l'agenda global:", error);
                 showMessageModal("Erreur lors du chargement de l'agenda. Veuillez réessayer.");
             });
         }
 
-        // Navigation du calendrier
+        // Écouteurs d'événements pour la navigation du calendrier
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentMonth--;
             if (currentMonth < 0) {
@@ -384,22 +465,20 @@
             renderCalendar();
         });
 
-        // Attacher l'écouteur pour le bouton de fermeture du modal
-        document.getElementById('modalCloseButton').addEventListener('click', hideMessageModal);
-
-        // Script pour le menu hamburger
+        // Script pour le menu hamburger (responsive navigation)
         document.addEventListener('DOMContentLoaded', () => {
             const hamburgerMenu = document.getElementById('hamburger-menu');
             const navLinks = document.getElementById('nav-links');
 
             if (hamburgerMenu && navLinks) {
                 hamburgerMenu.addEventListener('click', () => {
-                    navLinks.classList.toggle('active');
+                    navLinks.classList.toggle('hidden'); // Bascule la visibilité des liens de navigation
+                    navLinks.classList.toggle('flex'); // Ajoute flex pour l'affichage en colonne
                 });
             }
         });
 
-        // Mettre à jour l'année dans le pied de page
+        // Met à jour l'année courante dans le pied de page
         document.addEventListener('DOMContentLoaded', () => {
             const currentYearSpan = document.getElementById('current-year');
             if (currentYearSpan) {
@@ -407,23 +486,25 @@
             }
         });
 
-        // Fonction pour démarrer le carrousel
+        /**
+         * Démarre le carrousel d'images en arrière-plan.
+         */
         function startCarousel() {
             const carouselContainer = document.getElementById('user-carousel-background');
             if (!carouselContainer) return;
 
-            // Clear any existing images to prevent duplicates on re-render if any
+            // Efface les images existantes pour éviter les doublons lors du re-rendu
             carouselContainer.innerHTML = '';
 
-            // Load images into the carousel container
+            // Charge les images dans le conteneur du carrousel
             CAROUSEL_IMAGES.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
                 img.alt = `Image d'arrière-plan ${index + 1}`;
-                // Add an error handler for images
+                // Ajoute un gestionnaire d'erreurs pour les images
                 img.onerror = () => {
                     console.error(`Échec du chargement de l'image: ${src}`);
-                    // Fallback to a placeholder image
+                    // Fallback vers une image de placeholder en cas d'erreur
                     img.src = `https://placehold.co/1920x1080/000000/FFFFFF?text=Erreur+Image+${index + 1}`;
                 };
                 carouselContainer.appendChild(img);
@@ -432,20 +513,21 @@
             const images = carouselContainer.querySelectorAll('img');
             if (images.length === 0) return;
 
-            // Set the first image as active
+            // Définit la première image comme active
             images[currentImageIndex].classList.add('active');
 
+            // Change l'image toutes les 5 secondes
             setInterval(() => {
-                images[currentImageIndex].classList.remove('active');
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                images[currentImageIndex].classList.add('active');
-            }, 5000); // Change l'image toutes les 5 secondes
+                images[currentImageIndex].classList.remove('active'); // Cache l'image actuelle
+                currentImageIndex = (currentImageIndex + 1) % images.length; // Passe à l'image suivante
+                images[currentImageIndex].classList.add('active'); // Affiche la nouvelle image
+            }, 5000);
         }
 
-        // Initialiser Firebase lorsque la fenêtre est complètement chargée
+        // Initialise Firebase et démarre le carrousel lorsque la fenêtre est complètement chargée
         window.addEventListener('load', () => {
             initializeFirebase();
-            startCarousel(); // Démarrer le carrousel après le chargement
+            startCarousel();
         });
     </script>
 </body>

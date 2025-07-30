@@ -112,6 +112,29 @@
         <section id="admin-dashboard" class="hidden">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Gestion des Ateliers et Événements</h2>
 
+            <!-- Section de l'agenda global (calendrier Google Agenda-like) - Pleine largeur -->
+            <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Agenda Global des Événements</h3>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button id="prevMonthAdmin" class="px-4 py-2 text-sm">Mois précédent</button>
+                        <h3 id="currentMonthYearAdmin" class="text-xl font-semibold text-gray-800 text-center flex-grow"></h3>
+                        <button id="nextMonthAdmin" class="px-4 py-2 text-sm">Mois suivant</button>
+                    </div>
+                    <div id="calendar-grid-admin" class="calendar-grid">
+                        <!-- Les noms des jours de la semaine -->
+                        <div class="calendar-day-name">Lun</div>
+                        <div class="calendar-day-name">Mar</div>
+                        <div class="calendar-day-name">Mer</div>
+                        <div class="calendar-day-name">Jeu</div>
+                        <div class="calendar-day-name">Ven</div>
+                        <div class="calendar-day-name">Sam</div>
+                        <div class="calendar-day-name">Dim</div>
+                        <!-- Les jours du calendrier seront générés ici par JavaScript -->
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Section de gestion des ateliers -->
                 <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
@@ -147,34 +170,12 @@
                     </div>
                 </div>
 
-                <!-- Section de l'agenda global (calendrier Google Agenda-like) -->
+                <!-- Section des événements d'agenda existants (Liste) -->
                 <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Agenda Global des Événements</h3>
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button id="prevMonthAdmin" class="px-4 py-2 text-sm">Mois précédent</button>
-                            <h3 id="currentMonthYearAdmin" class="text-xl font-semibold text-gray-800 text-center flex-grow"></h3>
-                            <button id="nextMonthAdmin" class="px-4 py-2 text-sm">Mois suivant</button>
-                        </div>
-                        <div id="calendar-grid-admin" class="calendar-grid">
-                            <!-- Les noms des jours de la semaine -->
-                            <div class="calendar-day-name">Lun</div>
-                            <div class="calendar-day-name">Mar</div>
-                            <div class="calendar-day-name">Mer</div>
-                            <div class="calendar-day-name">Jeu</div>
-                            <div class="calendar-day-name">Ven</div>
-                            <div class="calendar-day-name">Sam</div>
-                            <div class="calendar-day-name">Dim</div>
-                            <!-- Les jours du calendrier seront générés ici par JavaScript -->
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Événements d'Agenda Existants (Liste)</h3>
-                        <div id="existing-agenda-events" class="space-y-4">
-                            <!-- Les événements d'agenda existants seront chargés ici -->
-                            <p class="text-gray-600">Chargement des événements...</p>
-                        </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Événements d'Agenda Existants (Liste)</h3>
+                    <div id="existing-agenda-events" class="space-y-4">
+                        <!-- Les événements d'agenda existants seront chargés ici -->
+                        <p class="text-gray-600">Chargement des événements...</p>
                     </div>
                 </div>
             </div>

@@ -197,7 +197,7 @@
     </main>
 
     <footer class="bg-gray-800 text-white p-4 mt-8 text-center rounded-t-lg shadow-inner">
-        <p>&copy; 2024 Atelier DSR. Tous droits réservés.</p>
+        <p>&copy; <span id="current-year"></span> Atelier DSR. Tous droits réservés.</p>
         <p class="text-sm mt-2">Développé pour Destination Sud Réunion.</p>
     </footer>
 
@@ -557,6 +557,14 @@
             }
         });
 
+        // Mettre à jour l'année dans le pied de page
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearSpan = document.getElementById('current-year');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+        });
+
         // Initialiser Firebase lorsque la fenêtre est complètement chargée
         window.addEventListener('load', initializeFirebase);
 
@@ -575,4 +583,3 @@
     </script>
 </body>
 </html>
-

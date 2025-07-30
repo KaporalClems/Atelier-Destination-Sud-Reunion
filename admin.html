@@ -12,6 +12,56 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Styles pour le menu hamburger */
+        .hamburger-menu {
+            display: none; /* Caché par défaut, affiché sur mobile */
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            z-index: 10;
+        }
+
+        .hamburger-menu .bar {
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex; /* Affiché par défaut sur desktop */
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Caché sur mobile */
+                flex-direction: column;
+                position: absolute;
+                top: 64px; /* Hauteur du header */
+                right: 0;
+                width: 100%;
+                background-color: #007bff;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 5;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 1rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .hamburger-menu {
+                display: flex; /* Affiché sur mobile */
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
@@ -24,9 +74,24 @@
     </div>
 
     <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container mx-auto flex justify-between items-center relative">
             <h1 class="text-3xl font-bold">Administration Atelier DSR</h1>
-            <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
+            
+            <!-- Menu Hamburger et Logo -->
+            <div class="flex items-center space-x-4">
+                <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
+                <div class="hamburger-menu" id="hamburger-menu">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+
+            <!-- Liens de navigation (cachés sur mobile, affichés via hamburger) -->
+            <nav id="nav-links" class="nav-links">
+                <a href="index.html" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Accueil Utilisateur</a>
+                <!-- Tu peux ajouter d'autres liens ici si nécessaire -->
+            </nav>
         </div>
     </header>
 
@@ -381,10 +446,7 @@
             // Nous devons parcourir toutes les collections d'utilisateurs pour trouver les réservations
             // C'est une approche simplifiée. En production, une collection centralisée des réservations
             // serait plus efficace ou des requêtes plus complexes.
-            // Pour cet exemple, nous allons écouter les changements dans la collection 'workshops'
-            // et 'globalAgendaEvents' pour afficher les titres correspondants.
-            // La liste des réservations sera plus complexe car elle est stockée par userId.
-            // Pour simplifier, nous allons juste lister les réservations connues.
+            // Pour cet exemple, nous allons juste lister les réservations connues.
 
             // Pour récupérer les réservations de TOUS les utilisateurs, il faudrait une structure de données différente
             // ou une fonction Cloud Function pour agréger ces données.
@@ -434,7 +496,33 @@
                 button.onclick = async (e) => {
                     const id = e.target.dataset.id;
                     const type = e.target.dataset.type;
-                    if (confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) { // Utilisation de confirm pour la démo, à remplacer par un modal personnalisé
+                    // Remplacer confirm() par un modal personnalisé pour une meilleure UX
+                    const confirmDelete = await new Promise(resolve => {
+                        const modal = document.getElementById('messageModal');
+                        document.getElementById('modalMessage').textContent = "Êtes-vous sûr de vouloir supprimer cet élément ?";
+                        const okButton = document.getElementById('modalCloseButton');
+                        okButton.textContent = "Oui";
+                        const cancelButton = document.createElement('button');
+                        cancelButton.textContent = "Non";
+                        cancelButton.className = "ml-4 px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400";
+                        cancelButton.onclick = () => {
+                            hideMessageModal();
+                            okButton.textContent = "OK"; // Réinitialiser le texte du bouton OK
+                            cancelButton.remove(); // Supprimer le bouton annuler
+                            resolve(false);
+                        };
+                        okButton.onclick = () => {
+                            hideMessageModal();
+                            okButton.textContent = "OK"; // Réinitialiser le texte du bouton OK
+                            cancelButton.remove(); // Supprimer le bouton annuler
+                            resolve(true);
+                        };
+                        modal.querySelector('.modal-content').appendChild(cancelButton);
+                        modal.style.display = 'flex';
+                    });
+
+
+                    if (confirmDelete) {
                         try {
                             if (type === 'workshop') {
                                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/workshops`, id));
@@ -455,6 +543,18 @@
         // Attacher l'écouteur pour le bouton de fermeture du modal
         document.getElementById('modalCloseButton').addEventListener('click', hideMessageModal);
 
+        // Script pour le menu hamburger
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const navLinks = document.getElementById('nav-links');
+
+            if (hamburgerMenu && navLinks) {
+                hamburgerMenu.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                });
+            }
+        });
+
         // Initialiser Firebase lorsque la fenêtre est complètement chargée
         window.addEventListener('load', initializeFirebase);
 
@@ -473,3 +573,4 @@
     </script>
 </body>
 </html>
+

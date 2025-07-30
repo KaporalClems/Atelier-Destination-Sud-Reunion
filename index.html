@@ -3,59 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier DSR - Accueil</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Atelier DSR</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff"/>
+    <meta name="theme-color" content="#2563eb"/>
+    <link rel="apple-touch-icon" href="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png">
 </head>
 <body>
+    <div id="root"></div>
 
-    <div id="splash-screen">
-        <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="logo-animation">
-        <p>Chargement...</p>
-    </div>
-
-    <div id="main-content" style="display:none;">
-        <header>
-            <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="logo">
-            <h1>Ateliers DSR</h1>
-            <button id="menu-button">☰</button>
-        </header>
-
-        <nav id="nav-menu" class="hidden">
-            <a href="index.html">Accueil</a>
-            <a href="admin.html">Administrateur</a>
-        </nav>
-
-        <main>
-            <section id="ateliers">
-                <h2>Nos Ateliers</h2>
-                <div class="atelier">
-                    <h3>Atelier de Cuisine Créole</h3>
-                    <p>Découvrez les saveurs authentiques de la Réunion et apprenez à cuisiner un vrai cari au feu de bois.</p>
-                    <button>Réserver cet atelier</button>
-                </div>
-                <div class="atelier">
-                    <h3>Initiation au Maloya</h3>
-                    <p>Plongez au cœur de la culture réunionnaise avec une initiation aux percussions et chants du Maloya.</p>
-                    <button>Réserver cet atelier</button>
-                </div>
-            </section>
-
-            <section id="agenda-globale">
-                <h2>Agenda des Événements</h2>
-                <div id="calendar-view">
-                    <p>Aucun événement à venir pour le moment.</p>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 Atelier DSR</p>
-            <a href="#">Mentions Légales</a> | <a href="#">Politique de confidentialité</a>
-        </footer>
-    </div>
-
-    <script src="app.js"></script>
+    <script type="text/babel" src="app.js"></script>
 </body>
 </html>

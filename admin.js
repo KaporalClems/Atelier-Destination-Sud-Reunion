@@ -1,34 +1,13 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const loginButton = document.getElementById('login-button');
-    const accessCodeInput = document.getElementById('access-code');
-    const errorMessage = document.getElementById('error-message');
-    const loginForm = document.getElementById('login-form');
-    const adminPanel = document.getElementById('admin-panel');
+// admin.js
+// Ce fichier est principalement pour la logique côté client de l'interface d'administration.
+// La logique Firebase est incluse directement dans admin.html pour la simplicité de l'exemple PWA.
+// En production, il serait préférable de modulariser davantage.
 
-    const ADMIN_CODE = "admin2025"; // IMPORTANT : Change ce code !
+// Note: Les fonctions Firebase (initializeFirebase, loadWorkshops, loadGlobalAgenda, loadUserReservations)
+// sont définies directement dans le script embarqué de admin.html pour des raisons de simplicité
+// dans cet exemple PWA. Pour une application plus grande, vous les exporteriez et les importeriez ici.
 
-    // Vérifie le code d'accès
-    loginButton.addEventListener('click', () => {
-        if (accessCodeInput.value === ADMIN_CODE) {
-            loginForm.classList.add('hidden');
-            adminPanel.classList.remove('hidden');
-        } else {
-            errorMessage.classList.remove('hidden');
-            setTimeout(() => errorMessage.classList.add('hidden'), 3000);
-        }
-    });
+// Le service worker est enregistré dans admin.html.
 
-    // Logique pour ajouter des événements (à lier à une base de données plus tard)
-    const addEventButton = document.getElementById('add-event-button');
-    addEventButton.addEventListener('click', () => {
-        const title = document.getElementById('event-title').value;
-        const date = document.getElementById('event-date').value;
-        
-        if (title && date) {
-            alert(`Événement "${title}" pour le ${date} ajouté ! (simulation)`);
-            // Ici, vous ajouteriez le code pour sauvegarder l'événement
-        } else {
-            alert("Veuillez remplir le titre et la date.");
-        }
-    });
-});
+// Aucune logique JavaScript supplémentaire n'est requise ici car tout est géré dans admin.html
+// pour cet exemple. Ce fichier existe pour respecter la structure demandée.

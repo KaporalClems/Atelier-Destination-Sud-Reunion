@@ -12,7 +12,8 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Styles pour le menu hamburger */
+        /* Styles pour le menu hamburger (déjà dans style.css, mais répété ici pour la clarté si style.css n'est pas chargé) */
+        /* Ces styles devraient idéalement être uniquement dans style.css */
         .hamburger-menu {
             /* display: none;  Removed: now always visible on desktop too */
             display: flex; /* Always visible */
@@ -60,7 +61,6 @@
                 border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             }
 
-            /* On mobile, the hamburger menu is always displayed, and the nav-links are toggled */
             .hamburger-menu {
                 display: flex; /* Always displayed on mobile */
             }
@@ -124,7 +124,7 @@
     </main>
 
     <footer class="bg-gray-800 text-white p-4 mt-8 text-center rounded-t-lg shadow-inner">
-        <p>&copy; 2024 Atelier DSR. Tous droits réservés.</p>
+        <p>&copy; <span id="current-year"></span> Atelier DSR. Tous droits réservés.</p>
         <p class="text-sm mt-2">Développé pour Destination Sud Réunion.</p>
     </footer>
 
@@ -323,6 +323,14 @@
                 hamburgerMenu.addEventListener('click', () => {
                     navLinks.classList.toggle('active');
                 });
+            }
+        });
+
+        // Mettre à jour l'année dans le pied de page
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearSpan = document.getElementById('current-year');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
             }
         });
 

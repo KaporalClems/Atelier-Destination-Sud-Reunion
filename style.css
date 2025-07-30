@@ -1,6 +1,41 @@
 /* style.css */
 /* Utilisation de Tailwind CSS via le CDN, donc ce fichier est principalement pour des styles personnalisés */
 
+/* Styles généraux pour le corps et le carrousel */
+body {
+    font-family: 'Inter', sans-serif;
+    /* Assurez-vous que le corps de la page n'a pas de couleur de fond opaque pour voir le carrousel */
+    background-color: transparent; /* Permet au carrousel de s'afficher en arrière-plan */
+}
+
+/* Carrousel d'images en arrière-plan */
+.carousel-background {
+    position: fixed; /* Fixe le carrousel en arrière-plan */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place le carrousel derrière le contenu */
+    overflow: hidden; /* Cache tout débordement */
+    background-color: #000; /* Couleur de fond par défaut si aucune image n'est chargée */
+}
+
+.carousel-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Couvre toute la zone sans déformer l'image */
+    opacity: 0; /* Caché par défaut */
+    transition: opacity 1.5s ease-in-out; /* Transition douce entre les images */
+    position: absolute; /* Permet aux images de se superposer */
+    top: 0;
+    left: 0;
+}
+
+.carousel-background img.active {
+    opacity: 1; /* Affiche l'image active */
+}
+
+
 /* Animation de chargement */
 #loading-screen {
     position: fixed;
@@ -96,7 +131,7 @@
 
 /* Styles pour le menu hamburger */
 .hamburger-menu {
-    display: none; /* Hidden by default, shown on mobile */
+    display: flex; /* Always visible */
     cursor: pointer;
     flex-direction: column;
     justify-content: space-around;
@@ -115,15 +150,16 @@
 
 .nav-links {
     display: flex; /* Displayed by default on desktop */
+    align-items: center; /* Align items vertically in the center */
 }
 
 @media (max-width: 768px) {
     .nav-links {
-        display: none; /* Hidden on mobile */
+        display: none; /* Hidden on mobile by default */
         flex-direction: column;
         position: absolute;
         top: 64px; /* Header height */
-        right: 0;
+        left: 0; /* Changed from right: 0 to left: 0 */
         width: 100%;
         background-color: #007bff;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -131,7 +167,7 @@
     }
 
     .nav-links.active {
-        display: flex;
+        display: flex; /* Shown when hamburger is active */
     }
 
     .nav-links a {
@@ -141,6 +177,99 @@
     }
 
     .hamburger-menu {
-        display: flex; /* Displayed on mobile */
+        display: flex; /* Always displayed on mobile */
     }
+}
+/* Styles pour le conteneur du calendrier */
+.calendar-container {
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Styles for the custom calendar */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.calendar-header button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-header button:hover {
+    background-color: #0056b3;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.calendar-day-name, .calendar-day {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.calendar-day-name {
+    font-weight: bold;
+    background-color: #e2e8f0; /* Tailwind gray-200 */
+    color: #2d3748; /* Tailwind gray-800 */
+}
+
+.calendar-day {
+    background-color: #f7fafc; /* Tailwind gray-100 */
+    border: 1px solid #edf2f7; /* Tailwind gray-200 */
+    min-height: 80px; /* Ensure enough space for events */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.875rem; /* text-sm */
+}
+
+.calendar-day.current-month {
+    background-color: #ffffff;
+}
+
+.calendar-day.today {
+    border: 2px solid #007bff;
+    background-color: #e0f2fe; /* Tailwind blue-100 */
+}
+
+.calendar-day-number {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #f0f4f8; /* Light blue-gray */
+    border-radius: 0.25rem;
+    align-self: flex-end; /* Align number to top-right */
+}
+
+.calendar-event {
+    background-color: #4299e1; /* Tailwind blue-500 */
+    color: white;
+    font-size: 0.75rem; /* text-xs */
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+    margin-top: 0.1rem;
+    width: calc(100% - 0.5rem); /* Adjust for padding */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

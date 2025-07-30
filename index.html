@@ -104,7 +104,13 @@
 
         // Variables globales fournies par l'environnement Canvas
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        let firebaseConfig = {};
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch (e) {
+            console.error("Erreur lors du parsing de __firebase_config:", e);
+            showMessageModal("Erreur de configuration Firebase. Veuillez contacter l'administrateur.");
+        }
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
@@ -142,10 +148,23 @@
 
         // Initialisation de Firebase et gestion de l'authentification
         async function initializeFirebase() {
+            console.log("Début de l'initialisation de Firebase...");
+            console.log("appId:", appId);
+            console.log("firebaseConfig (avant vérification):", firebaseConfig);
+            console.log("initialAuthToken:", initialAuthToken ? "Présent" : "Absent");
+
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("Erreur: firebaseConfig est vide. Impossible d'initialiser Firebase.");
+                showMessageModal("Erreur: La configuration de l'application est manquante. Veuillez réessayer ou contacter l'administrateur.");
+                hideLoadingScreen();
+                return;
+            }
+
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                console.log("Firebase App, Firestore, Auth initialisés.");
 
                 // Écouteur de changement d'état d'authentification
                 onAuthStateChanged(auth, async (user) => {
@@ -153,15 +172,17 @@
                         userId = user.uid;
                         console.log("Utilisateur authentifié:", userId);
                     } else {
-                        // Si l'utilisateur n'est pas authentifié, se connecter anonymement
+                        console.log("Aucun utilisateur authentifié. Tentative de connexion anonyme ou avec token...");
                         try {
                             if (initialAuthToken) {
+                                console.log("Tentative de connexion avec token personnalisé.");
                                 await signInWithCustomToken(auth, initialAuthToken);
                             } else {
+                                console.log("Tentative de connexion anonyme.");
                                 await signInAnonymously(auth);
                             }
                             userId = auth.currentUser?.uid || crypto.randomUUID(); // Fallback pour userId si anonyme
-                            console.log("Connecté anonymement ou avec token. User ID:", userId);
+                            console.log("Connecté. User ID:", userId);
                         } catch (error) {
                             console.error("Erreur d'authentification:", error);
                             showMessageModal("Erreur d'authentification: " + error.message);
@@ -169,6 +190,7 @@
                         }
                     }
                     isAuthReady = true;
+                    console.log("isAuthReady:", isAuthReady);
                     // Une fois l'authentification prête, charger les données
                     loadWorkshops();
                     loadGlobalAgenda(); // Maintenant charge et rend le calendrier personnalisé
@@ -176,7 +198,7 @@
                 });
 
             } catch (error) {
-                console.error("Erreur lors de l'initialisation de Firebase:", error);
+                console.error("Erreur lors de l'initialisation de Firebase (initializeApp, getFirestore, getAuth):", error);
                 showMessageModal("Erreur lors de l'initialisation de l'application. Veuillez réessayer.");
                 hideLoadingScreen(); // Cacher même en cas d'erreur
             }
@@ -425,19 +447,6 @@
             initializeFirebase();
             startCarousel(); // Démarrer le carrousel après le chargement
         });
-
-        // Le code d'enregistrement du Service Worker a été supprimé pour éviter l'erreur.
-        // if ('serviceWorker' in navigator) {
-        //     window.addEventListener('load', () => {
-        //         navigator.serviceWorker.register('/service-worker.js')
-        //             .then(registration => {
-        //                 console.log('Service Worker enregistré avec succès:', registration);
-        //             })
-        //             .catch(error => {
-        //                 console.error('Échec de l\'enregistrement du Service Worker:', error);
-        //             });
-        //     });
-        // }
     </script>
 </body>
 </html>

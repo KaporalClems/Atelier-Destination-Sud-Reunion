@@ -105,7 +105,6 @@
         // Variables globales fournies par l'environnement Canvas
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        // Correction ici: initialAuthToken doit référencer __initial_auth_token
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
@@ -427,18 +426,18 @@
             startCarousel(); // Démarrer le carrousel après le chargement
         });
 
-        // Enregistrer le Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker enregistré avec succès:', registration);
-                    })
-                    .catch(error => {
-                        console.error('Échec de l\'enregistrement du Service Worker:', error);
-                    });
-            });
-        }
+        // Le code d'enregistrement du Service Worker a été supprimé pour éviter l'erreur.
+        // if ('serviceWorker' in navigator) {
+        //     window.addEventListener('load', () => {
+        //         navigator.serviceWorker.register('/service-worker.js')
+        //             .then(registration => {
+        //                 console.log('Service Worker enregistré avec succès:', registration);
+        //             })
+        //             .catch(error => {
+        //                 console.error('Échec de l\'enregistrement du Service Worker:', error);
+        //             });
+        //     });
+        // }
     </script>
 </body>
 </html>

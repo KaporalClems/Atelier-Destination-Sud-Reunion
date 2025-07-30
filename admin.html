@@ -36,6 +36,38 @@
         </div>
     </div>
 
+    <!-- Modal pour l'ajout/modification d'événement d'agenda -->
+    <div id="agendaEventModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter/Modifier un Événement Agenda</h3>
+            <form id="agenda-event-form" class="space-y-4">
+                <div>
+                    <label for="agenda-title" class="block text-gray-700 text-sm font-bold mb-2">Titre :</label>
+                    <input type="text" id="agenda-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="agenda-description" class="block text-gray-700 text-sm font-bold mb-2">Description :</label>
+                    <textarea id="agenda-description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                </div>
+                <div>
+                    <label for="agenda-date" class="block text-gray-700 text-sm font-bold mb-2">Date et Heure :</label>
+                    <input type="datetime-local" id="agenda-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="agenda-image" class="block text-gray-700 text-sm font-bold mb-2">URL de l'image :</label>
+                    <input type="url" id="agenda-image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <input type="hidden" id="agenda-event-id">
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" id="cancelAgendaEvent" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition">Annuler</button>
+                    <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
+                        Enregistrer l'Événement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- En-tête de l'application -->
     <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg bg-opacity-80 relative z-10">
         <div class="container mx-auto flex justify-between items-center flex-wrap">
@@ -80,8 +112,8 @@
         <section id="admin-dashboard" class="hidden">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Gestion des Ateliers et Événements</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Formulaire pour ajouter/modifier un atelier -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Section de gestion des ateliers -->
                 <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter/Modifier un Atelier</h3>
                     <form id="workshop-form" class="space-y-4">
@@ -106,82 +138,52 @@
                             Ajouter/Mettre à jour l'Atelier
                         </button>
                     </form>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Ateliers Existants</h3>
+                        <div id="existing-workshops" class="space-y-4">
+                            <!-- Les ateliers existants seront chargés ici -->
+                            <p class="text-gray-600">Chargement des ateliers...</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Formulaire pour ajouter/modifier un événement d'agenda -->
+                <!-- Section de l'agenda global (calendrier Google Agenda-like) -->
                 <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ajouter/Modifier un Événement Agenda</h3>
-                    <form id="agenda-event-form" class="space-y-4">
-                        <div>
-                            <label for="agenda-title" class="block text-gray-700 text-sm font-bold mb-2">Titre :</label>
-                            <input type="text" id="agenda-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Agenda Global des Événements</h3>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button id="prevMonthAdmin" class="px-4 py-2 text-sm">Mois précédent</button>
+                            <h3 id="currentMonthYearAdmin" class="text-xl font-semibold text-gray-800 text-center flex-grow"></h3>
+                            <button id="nextMonthAdmin" class="px-4 py-2 text-sm">Mois suivant</button>
                         </div>
-                        <div>
-                            <label for="agenda-description" class="block text-gray-700 text-sm font-bold mb-2">Description :</label>
-                            <textarea id="agenda-description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        <div id="calendar-grid-admin" class="calendar-grid">
+                            <!-- Les noms des jours de la semaine -->
+                            <div class="calendar-day-name">Lun</div>
+                            <div class="calendar-day-name">Mar</div>
+                            <div class="calendar-day-name">Mer</div>
+                            <div class="calendar-day-name">Jeu</div>
+                            <div class="calendar-day-name">Ven</div>
+                            <div class="calendar-day-name">Sam</div>
+                            <div class="calendar-day-name">Dim</div>
+                            <!-- Les jours du calendrier seront générés ici par JavaScript -->
                         </div>
-                        <div>
-                            <label for="agenda-date" class="block text-gray-700 text-sm font-bold mb-2">Date et Heure :</label>
-                            <input type="datetime-local" id="agenda-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="agenda-image" class="block text-gray-700 text-sm font-bold mb-2">URL de l'image :</label>
-                            <input type="url" id="agenda-image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <input type="hidden" id="agenda-event-id">
-                        <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
-                            Ajouter/Mettre à jour l'Événement
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Liste des ateliers existants -->
-            <div class="mt-8 bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Ateliers Existants</h3>
-                <div id="existing-workshops" class="space-y-4">
-                    <!-- Les ateliers existants seront chargés ici par JavaScript -->
-                    <p class="text-gray-600">Chargement des ateliers...</p>
-                </div>
-            </div>
-
-            <!-- Liste des événements d'agenda existants (Firestore) -->
-            <div class="mt-8 bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Événements d'Agenda Existants (Firestore)</h3>
-                <div id="existing-agenda-events" class="space-y-4">
-                    <!-- Les événements d'agenda existants seront chargés ici par JavaScript -->
-                    <p class="text-gray-600">Chargement des événements...</p>
-                </div>
-            </div>
-
-            <!-- Aperçu de l'agenda global (calendrier) -->
-            <div class="mt-8 bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Aperçu de l'Agenda Global</h3>
-                <div class="calendar-container">
-                    <div class="calendar-header">
-                        <button id="prevMonthAdmin" class="px-4 py-2 text-sm">Mois précédent</button>
-                        <h3 id="currentMonthYearAdmin" class="text-xl font-semibold text-gray-800 text-center flex-grow"></h3>
-                        <button id="nextMonthAdmin" class="px-4 py-2 text-sm">Mois suivant</button>
                     </div>
-                    <div id="calendar-grid-admin" class="calendar-grid">
-                        <!-- Les noms des jours de la semaine -->
-                        <div class="calendar-day-name">Lun</div>
-                        <div class="calendar-day-name">Mar</div>
-                        <div class="calendar-day-name">Mer</div>
-                        <div class="calendar-day-name">Jeu</div>
-                        <div class="calendar-day-name">Ven</div>
-                        <div class="calendar-day-name">Sam</div>
-                        <div class="calendar-day-name">Dim</div>
-                        <!-- Les jours du calendrier seront générés ici par JavaScript -->
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Événements d'Agenda Existants (Liste)</h3>
+                        <div id="existing-agenda-events" class="space-y-4">
+                            <!-- Les événements d'agenda existants seront chargés ici -->
+                            <p class="text-gray-600">Chargement des événements...</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Liste des réservations utilisateurs -->
+            <!-- Section des réservations utilisateurs (en bas, pleine largeur) -->
             <div class="mt-8 bg-white p-4 md:p-6 rounded-lg shadow-lg bg-opacity-100">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Réservations Utilisateurs</h3>
                 <div id="user-reservations" class="space-y-4">
-                    <!-- Les réservations des utilisateurs seront chargées ici par JavaScript -->
+                    <!-- Les réservations des utilisateurs seront chargées ici -->
                     <p class="text-gray-600">Chargement des réservations...</p>
                 </div>
             </div>
@@ -273,12 +275,52 @@
                     modalCloseButton.textContent = "OK";
                     modalCloseButton.onclick = () => {
                         modal.classList.add('hidden');
-                        resolve(true); // Résout à true par défaut pour un simple message OK
+                        resolve(true); // Résout à true par default pour un simple message OK
                     };
                 }
                 modal.classList.remove('hidden');
             });
         }
+
+        /**
+         * Affiche le modal d'ajout/modification d'événement d'agenda.
+         * @param {string} dateString - La date à pré-remplir dans le formulaire (format YYYY-MM-DD).
+         * @param {Object} eventData - Les données de l'événement à modifier (optionnel).
+         * @param {string} eventId - L'ID de l'événement à modifier (optionnel).
+         */
+        function showAgendaEventModal(dateString = '', eventData = {}, eventId = '') {
+            const modal = document.getElementById('agendaEventModal');
+            const form = document.getElementById('agenda-event-form');
+            
+            // Réinitialise le formulaire
+            form.reset();
+            document.getElementById('agenda-event-id').value = '';
+
+            // Pré-remplit les champs si des données d'événement sont fournies (pour la modification)
+            if (eventId && Object.keys(eventData).length > 0) {
+                document.getElementById('agenda-event-id').value = eventId;
+                document.getElementById('agenda-title').value = eventData.title || '';
+                document.getElementById('agenda-description').value = eventData.description || '';
+                document.getElementById('agenda-date').value = eventData.date ? new Date(eventData.date).toISOString().slice(0, 16) : '';
+                document.getElementById('agenda-image').value = eventData.imageUrl || '';
+            } else if (dateString) {
+                // Pré-remplit la date si une date est fournie (pour l'ajout rapide)
+                document.getElementById('agenda-date').value = `${dateString}T09:00`; // Par défaut à 9h00
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * Cache le modal d'ajout/modification d'événement d'agenda.
+         */
+        function hideAgendaEventModal() {
+            document.getElementById('agendaEventModal').classList.add('hidden');
+        }
+
+        // Écouteur pour le bouton Annuler du modal d'événement
+        document.getElementById('cancelAgendaEvent').addEventListener('click', hideAgendaEventModal);
+
 
         /**
          * Initialise Firebase (App, Firestore, Auth) et gère l'authentification pour la page admin.
@@ -420,7 +462,10 @@
          */
         document.getElementById('agenda-event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log("Soumission du formulaire d'événement agenda détectée.");
+
             if (!isAuthReady || !db) {
+                console.warn("Firebase n'est pas prêt. isAuthReady:", isAuthReady, "db:", db);
                 showMessageModal("Veuillez patienter pendant le chargement de l'application.");
                 return;
             }
@@ -438,18 +483,26 @@
                 imageUrl
             };
 
+            console.log("Données de l'événement agenda à soumettre:", eventData);
+            console.log("ID de l'événement agenda (pour modification):", eventId);
+
             try {
                 if (eventId) {
                     // Si un ID d'événement existe, met à jour l'événement existant
+                    console.log("Tentative de mise à jour de l'événement agenda avec ID:", eventId);
                     const eventDocRef = doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, eventId);
                     await updateDoc(eventDocRef, eventData);
                     showMessageModal("Événement agenda mis à jour avec succès !");
+                    console.log("Événement agenda mis à jour avec succès !");
                 } else {
                     // Sinon, ajoute un nouvel événement
+                    console.log("Tentative d'ajout d'un nouvel événement agenda.");
                     const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
                     await addDoc(agendaRef, eventData);
                     showMessageModal("Événement agenda ajouté avec succès !");
+                    console.log("Événement agenda ajouté avec succès !");
                 }
+                hideAgendaEventModal(); // Cache le modal après soumission réussie
                 document.getElementById('agenda-event-form').reset(); // Réinitialise le formulaire
                 document.getElementById('agenda-event-id').value = ''; // Réinitialise l'ID caché
             } catch (error) {
@@ -527,7 +580,7 @@
 
             // Remplit les jours vides au début du mois pour aligner avec le bon jour de la semaine
             for (let i = 0; i < startDayIndex; i++) {
-                calendarGrid.innerHTML += `<div class="calendar-day"></div>`;
+                calendarGrid.innerHTML += `<div class="calendar-day empty"></div>`; // Ajout de la classe 'empty'
             }
 
             // Remplit les jours du mois
@@ -542,7 +595,15 @@
 
                 dayElement.innerHTML = `<span class="calendar-day-number">${day}</span>`;
 
-                // Filtre les événements qui ont lieu ce jour-là
+                // Ajoute un écouteur de clic pour ouvrir le modal d'ajout d'événement
+                dayElement.addEventListener('click', () => {
+                    const selectedDate = new Date(currentYearAdmin, currentMonthAdmin, day);
+                    const formattedDate = selectedDate.toISOString().slice(0, 10); // Format YYYY-MM-DD
+                    showAgendaEventModal(formattedDate);
+                });
+
+
+                // Filtrer les événements pour ce jour
                 const eventsForDay = allAgendaEventsAdmin.filter(event => {
                     const eventDate = new Date(event.date);
                     return eventDate.getDate() === day &&
@@ -555,6 +616,12 @@
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('calendar-event');
                     eventDiv.textContent = event.title;
+                    // Ajoute un écouteur de clic pour modifier l'événement existant
+                    eventDiv.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Empêche le clic sur le jour de se propager
+                        const eventId = event.id; // Supposons que l'ID de l'événement est stocké dans l'objet event
+                        showAgendaEventModal('', event, eventId); // Passer l'objet événement et son ID
+                    });
                     dayElement.appendChild(eventDiv);
                 });
 
@@ -584,15 +651,14 @@
                 }
                 console.log("Événements d'agenda trouvés:", snapshot.docs.length);
                 snapshot.forEach(doc => {
-                    const event = doc.data();
-                    const eventId = doc.id;
+                    const event = { id: doc.id, ...doc.data() }; // Inclure l'ID du document
                     allAgendaEventsAdmin.push(event); // Ajoute à la liste des événements pour le calendrier admin
                     const eventItem = `
                         <div class="flex flex-col sm:flex-row items-center justify-between bg-green-50 p-3 rounded-md shadow-sm border border-green-200">
                             <span class="font-medium text-gray-800 mb-2 sm:mb-0">${event.title}</span>
                             <div class="flex space-x-2">
-                                <button data-id="${eventId}" data-type="agenda-event" class="edit-btn bg-yellow-500 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-600">Modifier</button>
-                                <button data-id="${eventId}" data-type="agenda-event" class="delete-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Supprimer</button>
+                                <button data-id="${event.id}" data-type="agenda-event" class="edit-btn bg-yellow-500 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-600">Modifier</button>
+                                <button data-id="${event.id}" data-type="agenda-event" class="delete-btn bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Supprimer</button>
                             </div>
                         </div>
                     `;
@@ -656,13 +722,7 @@
                         if (docSnap.exists()) {
                             const data = docSnap.data();
                             console.log("Données de l'événement agenda pour modification:", data);
-                            document.getElementById('agenda-event-id').value = id;
-                            document.getElementById('agenda-title').value = data.title;
-                            document.getElementById('agenda-description').value = data.description;
-                            // Formate la date pour l'input datetime-local
-                            document.getElementById('agenda-date').value = data.date ? new Date(data.date).toISOString().slice(0, 16) : '';
-                            document.getElementById('agenda-image').value = data.imageUrl || '';
-                            showMessageModal("Formulaire d'événement agenda pré-rempli pour modification.");
+                            showAgendaEventModal('', data, id); // Ouvre le modal avec les données de l'événement
                         } else {
                             console.warn("Document événement agenda non trouvé pour ID:", id);
                             showMessageModal("Événement agenda introuvable pour modification.");
@@ -777,9 +837,9 @@
 
             // Change l'image toutes les 5 secondes
             setInterval(() => {
-                images[currentAdminImageIndex].classList.remove('active'); // Cache l'image actuelle
-                currentAdminImageIndex = (currentAdminImageIndex + 1) % images.length; // Passe à l'image suivante
-                images[currentAdminImageIndex].classList.add('active'); // Affiche la nouvelle image
+                images[currentAdminImageIndex].classList.remove('active'); 
+                currentAdminImageIndex = (currentAdminImageIndex + 1) % images.length;
+                images[currentAdminImageIndex].classList.add('active');
             }, 5000);
         }
 

@@ -68,22 +68,97 @@
         /* Styles pour le conteneur du calendrier */
         .calendar-container {
             position: relative;
-            padding-bottom: 75%; /* Ratio 4:3, ajustez si nécessaire */
-            height: 0;
+            /* padding-bottom: 75%; Removed for custom calendar */
+            /* height: 0; Removed for custom calendar */
             overflow: hidden;
             max-width: 100%;
             background: #fff;
             border-radius: 0.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
         }
 
-        .calendar-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
+        /* Styles for the custom calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .calendar-header button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-header button:hover {
+            background-color: #0056b3;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-name, .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .calendar-day-name {
+            font-weight: bold;
+            background-color: #e2e8f0; /* Tailwind gray-200 */
+            color: #2d3748; /* Tailwind gray-800 */
+        }
+
+        .calendar-day {
+            background-color: #f7fafc; /* Tailwind gray-100 */
+            border: 1px solid #edf2f7; /* Tailwind gray-200 */
+            min-height: 80px; /* Ensure enough space for events */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 0.875rem; /* text-sm */
+        }
+
+        .calendar-day.current-month {
+            background-color: #ffffff;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #007bff;
+            background-color: #e0f2fe; /* Tailwind blue-100 */
+        }
+
+        .calendar-day-number {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #f0f4f8; /* Light blue-gray */
+            border-radius: 0.25rem;
+            align-self: flex-end; /* Align number to top-right */
+        }
+
+        .calendar-event {
+            background-color: #4299e1; /* Tailwind blue-500 */
+            color: white;
+            font-size: 0.75rem; /* text-xs */
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.2rem;
+            margin-top: 0.1rem;
+            width: calc(100% - 0.5rem); /* Adjust for padding */
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
@@ -135,18 +210,25 @@
         </section>
 
         <section id="global-agenda" class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Agenda Global (Office de Tourisme)</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Agenda Global des Ateliers</h2>
             <div class="calendar-container">
-                <!-- Collez ici le code d'intégration de votre Google Agenda -->
-                <!-- Pour obtenir ce code :
-                     1. Allez sur Google Agenda (calendar.google.com).
-                     2. Dans la liste "Mes agendas", passez la souris sur l'agenda que vous voulez intégrer, cliquez sur les trois points (Options), puis sur "Paramètres et partage".
-                     3. Faites défiler jusqu'à la section "Intégrer l'agenda".
-                     4. Copiez le code HTML fourni et collez-le ci-dessous.
-                -->
-                <iframe src="https://calendar.google.com/calendar/embed?src=fr.french%23holiday%40group.v.calendar.google.com&ctz=Europe%2FParis" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                <div class="calendar-header">
+                    <button id="prevMonth">Mois précédent</button>
+                    <h3 id="currentMonthYear" class="text-xl font-semibold text-gray-800"></h3>
+                    <button id="nextMonth">Mois suivant</button>
+                </div>
+                <div id="calendar-grid" class="calendar-grid">
+                    <!-- Les noms des jours de la semaine -->
+                    <div class="calendar-day-name">Lun</div>
+                    <div class="calendar-day-name">Mar</div>
+                    <div class="calendar-day-name">Mer</div>
+                    <div class="calendar-day-name">Jeu</div>
+                    <div class="calendar-day-name">Ven</div>
+                    <div class="calendar-day-name">Sam</div>
+                    <div class="calendar-day-name">Dim</div>
+                    <!-- Les jours du calendrier seront générés ici -->
+                </div>
             </div>
-            <p class="text-gray-600 text-sm mt-4">Les événements ci-dessus sont gérés directement via Google Agenda. Les événements ajoutés via l'interface d'administration ne s'y afficheront pas automatiquement.</p>
         </section>
     </main>
 
@@ -164,13 +246,18 @@
         // Variables globales fournies par l'environnement Canvas
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? initialAuthToken : null;
 
         let app;
         let db;
         let auth;
         let userId = null;
         let isAuthReady = false;
+
+        // Variables pour le calendrier
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let allAgendaEvents = []; // Cache for all events
 
         // Fonction pour afficher un message modal
         function showMessageModal(message) {
@@ -215,7 +302,7 @@
                     isAuthReady = true;
                     // Une fois l'authentification prête, charger les données
                     loadWorkshops();
-                    // loadGlobalAgenda(); // Désactivé car le calendrier Google est intégré directement
+                    loadGlobalAgenda(); // Maintenant charge et rend le calendrier personnalisé
                     hideLoadingScreen(); // Cacher l'écran de chargement une fois tout chargé
                 });
 
@@ -305,13 +392,106 @@
             }
         }
 
-        // La fonction loadGlobalAgenda est désormais inutile pour l'affichage du calendrier Google
-        // Elle est maintenue pour la cohérence si d'autres parties du code en dépendent (ce qui n'est pas le cas ici)
-        function loadGlobalAgenda() {
-            // Cette fonction ne charge plus d'événements dans le DOM car un calendrier Google est intégré.
-            // Les événements d'agenda sont toujours gérés via l'interface d'administration dans Firestore.
-            console.log("loadGlobalAgenda appelé, mais l'affichage est géré par Google Agenda.");
+        // Fonction pour générer le calendrier
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthYear = document.getElementById('currentMonthYear');
+            calendarGrid.innerHTML = `
+                <div class="calendar-day-name">Lun</div>
+                <div class="calendar-day-name">Mar</div>
+                <div class="calendar-day-name">Mer</div>
+                <div class="calendar-day-name">Jeu</div>
+                <div class="calendar-day-name">Ven</div>
+                <div class="calendar-day-name">Sam</div>
+                <div class="calendar-day-name">Dim</div>
+            `; // Réinitialiser la grille avec les noms des jours
+
+            const date = new Date(currentYear, currentMonth, 1);
+            const firstDayOfMonth = date.getDay(); // 0 for Sunday, 1 for Monday, etc.
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            const todayDate = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+
+            // Ajuster le premier jour pour qu'il commence le lundi (0 pour dimanche, 1 pour lundi...)
+            const startDayIndex = (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1); // Si dimanche (0), le mettre à la fin (6)
+
+            // Remplir les jours vides avant le premier jour du mois
+            for (let i = 0; i < startDayIndex; i++) {
+                calendarGrid.innerHTML += `<div class="calendar-day"></div>`;
+            }
+
+            // Remplir les jours du mois
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day', 'current-month');
+                
+                if (day === todayDate && currentMonth === todayMonth && currentYear === todayYear) {
+                    dayElement.classList.add('today');
+                }
+
+                dayElement.innerHTML = `<span class="calendar-day-number">${day}</span>`;
+
+                // Filtrer les événements pour ce jour
+                const eventsForDay = allAgendaEvents.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate.getDate() === day &&
+                           eventDate.getMonth() === currentMonth &&
+                           eventDate.getFullYear() === currentYear;
+                });
+
+                eventsForDay.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.classList.add('calendar-event');
+                    eventDiv.textContent = event.title;
+                    dayElement.appendChild(eventDiv);
+                });
+
+                calendarGrid.appendChild(dayElement);
+            }
+
+            currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
         }
+
+        // Charger les événements de l'agenda global depuis Firestore
+        function loadGlobalAgenda() {
+            if (!isAuthReady || !db) {
+                console.log("Firebase non prêt pour charger l'agenda.");
+                return;
+            }
+
+            const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
+            onSnapshot(agendaRef, (snapshot) => {
+                allAgendaEvents = []; // Vider le cache
+                snapshot.forEach(doc => {
+                    allAgendaEvents.push(doc.data());
+                });
+                renderCalendar(); // Re-render le calendrier avec les nouvelles données
+            }, (error) => {
+                console.error("Erreur lors du chargement de l'agenda global:", error);
+                showMessageModal("Erreur lors du chargement de l'agenda. Veuillez réessayer.");
+            });
+        }
+
+        // Navigation du calendrier
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
 
         // Attacher l'écouteur pour le bouton de fermeture du modal
         document.getElementById('modalCloseButton').addEventListener('click', hideMessageModal);

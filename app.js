@@ -1,19 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Affiche l'animation de lancement pendant 3 secondes
+    // --- ANIMATION DE LANCEMENT ---
     setTimeout(() => {
         const splashScreen = document.getElementById('splash-screen');
-        const mainContent = document.getElementById('main-content');
-
         splashScreen.style.opacity = '0';
-        // Attendre la fin de la transition avant de cacher l'élément
         setTimeout(() => {
             splashScreen.classList.add('hidden');
-            mainContent.style.display = 'block';
+            document.getElementById('main-content').style.display = 'block';
         }, 500);
+    }, 2500); // Réduit à 2.5 secondes
 
-    }, 3000);
+    // --- GESTION DU MENU HAMBURGER ---
+    const menuButton = document.getElementById('menu-button');
+    const navMenu = document.getElementById('nav-menu');
 
-    // Enregistre le Service Worker pour la PWA
+    menuButton.addEventListener('click', () => {
+        navMenu.classList.toggle('hidden');
+    });
+
+    // --- SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
@@ -21,6 +25,4 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => console.log('❌ Échec de l\'enregistrement du Service Worker:', error));
         });
     }
-
-    // Ici, vous pourriez charger dynamiquement les événements de l'agenda
 });

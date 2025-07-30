@@ -1,58 +1,68 @@
+// service-worker.js
 const CACHE_NAME = 'atelier-dsr-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    // Ajoutez ici d'autres ressources statiques que vous souhaitez mettre en cache
-    // Par exemple, si vous avez des icônes ou des images spécifiques en dehors de celles chargées dynamiquement
-    // '/icon-192x192.png',
-    // '/icon-512x512.png',
-    // Note: main.js sera le bundle de votre application React
-    '/main.js' 
+    '/admin.html',
+    '/style.css',
+    '/app.js',
+    '/admin.js',
+    '/manifest.json',
+    'https://cdn.tailwindcss.com',
+    'https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png'
 ];
 
-self.addEventListener('install', (event) => {
-    console.log('Service Worker: Installation en cours...');
+// Installation du Service Worker et mise en cache des ressources
+self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('Service Worker: Mise en cache des ressources.');
+            .then(cache => {
+                console.log('Cache ouvert');
                 return cache.addAll(urlsToCache);
             })
-            .catch(error => {
-                console.error('Service Worker: Échec de la mise en cache lors de l\'installation', error);
-            })
     );
 });
 
-self.addEventListener('fetch', (event) => {
+// Interception des requêtes et renvoi des ressources depuis le cache ou le réseau
+self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
-            .then((response) => {
-                // Si la ressource est dans le cache, la retourner
+            .then(response => {
+                // Si la ressource est dans le cache, la renvoyer
                 if (response) {
-                    console.log('Service Worker: Servir depuis le cache:', event.request.url);
                     return response;
                 }
-                // Sinon, récupérer la ressource du réseau
-                console.log('Service Worker: Récupérer du réseau:', event.request.url);
-                return fetch(event.request);
-            })
-            .catch(error => {
-                console.error('Service Worker: Erreur lors de la récupération:', error);
-                // Vous pouvez retourner une page hors ligne ici si nécessaire
-                // return caches.match('/offline.html');
+                // Sinon, la récupérer depuis le réseau
+                return fetch(event.request).then(
+                    response => {
+                        // Vérifier si nous avons reçu une réponse valide
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
+                        }
+
+                        // Cloner la réponse car elle est un flux et ne peut être consommée qu'une seule fois
+                        const responseToCache = response.clone();
+
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                cache.put(event.request, responseToCache);
+                            });
+
+                        return response;
+                    }
+                );
             })
     );
 });
 
-self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activation en cours...');
+// Activation du Service Worker et suppression des anciens caches
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then(cacheNames => {
             return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Service Worker: Suppression de l\'ancien cache:', cacheName);
+                cacheNames.map(cacheName => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
                         return caches.delete(cacheName);
                     }
                 })

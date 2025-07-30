@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Atelier DSR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-form">
+        <h2>Accès Administrateur</h2>
+        <input type="password" id="access-code" placeholder="Code d'accès" required>
+        <button id="login-button">Entrer</button>
+        <p id="error-message" class="hidden">Code d'accès incorrect.</p>
+    </div>
+
+    <div id="admin-panel" class="hidden">
+        <header>
+            <h1>Panneau d'Administration</h1>
+        </header>
+        <main>
+            <section id="event-form">
+                <h2>Ajouter un événement à l'agenda</h2>
+                <input type="text" id="event-title" placeholder="Titre de l'événement" required>
+                <input type="date" id="event-date" required>
+                <input type="file" id="event-image" accept="image/*">
+                <button id="add-event-button">Ajouter l'événement</button>
+            </section>
+
+            <section id="admin-agenda">
+                <h2>Agenda Actuel</h2>
+                <div id="admin-calendar-view">
+                    </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

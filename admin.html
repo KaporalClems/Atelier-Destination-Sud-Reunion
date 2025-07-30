@@ -435,20 +435,32 @@
             console.log("ID de l'atelier (pour modification):", workshopId);
 
             try {
+                let docRef;
                 if (workshopId) {
-                    // Si un ID d'atelier existe, met à jour l'atelier existant
+                    // Mettre à jour l'atelier existant
                     console.log("Tentative de mise à jour de l'atelier avec ID:", workshopId);
-                    const workshopDocRef = doc(db, `artifacts/${appId}/public/data/workshops`, workshopId);
-                    await updateDoc(workshopDocRef, workshopData);
-                    showMessageModal("Atelier mis à jour avec succès !");
-                    console.log("Atelier mis à jour avec succès !");
+                    docRef = doc(db, `artifacts/${appId}/public/data/workshops`, workshopId);
+                    await updateDoc(docRef, workshopData);
+                    
+                    // Mettre à jour l'événement correspondant dans l'agenda global
+                    const agendaEventDocRef = doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, workshopId);
+                    await updateDoc(agendaEventDocRef, workshopData); // Utilise les mêmes données
+                    
+                    showMessageModal("Atelier et événement agenda mis à jour avec succès !");
+                    console.log("Atelier et événement agenda mis à jour avec succès !");
                 } else {
-                    // Sinon, ajoute un nouvel atelier
+                    // Ajouter un nouvel atelier
                     console.log("Tentative d'ajout d'un nouvel atelier.");
                     const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
-                    await addDoc(workshopsRef, workshopData);
-                    showMessageModal("Atelier ajouté avec succès !");
-                    console.log("Atelier ajouté avec succès !");
+                    docRef = await addDoc(workshopsRef, workshopData);
+                    const newWorkshopId = docRef.id;
+
+                    // Ajouter l'événement correspondant dans l'agenda global avec le même ID
+                    const agendaEventsRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
+                    await setDoc(doc(agendaEventsRef, newWorkshopId), { ...workshopData, isWorkshop: true }); // Marque comme un atelier
+                    
+                    showMessageModal("Atelier et événement agenda ajoutés avec succès !");
+                    console.log("Atelier et événement agenda ajoutés avec succès ! Nouvel ID:", newWorkshopId);
                 }
                 document.getElementById('workshop-form').reset(); // Réinitialise le formulaire
                 document.getElementById('workshop-id').value = ''; // Réinitialise l'ID caché
@@ -481,7 +493,8 @@
                 title,
                 description,
                 date: date ? new Date(date).toISOString() : null, // Convertit la date en format ISO si elle existe
-                imageUrl
+                imageUrl,
+                isWorkshop: false // S'assure que ce n'est pas marqué comme un atelier
             };
 
             console.log("Données de l'événement agenda à soumettre:", eventData);
@@ -747,8 +760,10 @@
                             if (type === 'workshop') {
                                 console.log("Tentative de suppression de l'atelier avec ID:", id);
                                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/workshops`, id));
-                                showMessageModal("Atelier supprimé avec succès !");
-                                console.log("Atelier supprimé avec succès !");
+                                // Supprimer également l'événement correspondant dans l'agenda global
+                                await deleteDoc(doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id));
+                                showMessageModal("Atelier et événement agenda supprimés avec succès !");
+                                console.log("Atelier et événement agenda supprimés avec succès !");
                             } else if (type === 'agenda-event') {
                                 console.log("Tentative de suppression de l'événement agenda avec ID:", id);
                                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id));

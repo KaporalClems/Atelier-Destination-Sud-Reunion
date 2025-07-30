@@ -367,7 +367,10 @@
          */
         document.getElementById('workshop-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log("Soumission du formulaire d'atelier détectée.");
+
             if (!isAuthReady || !db) {
+                console.warn("Firebase n'est pas prêt. isAuthReady:", isAuthReady, "db:", db);
                 showMessageModal("Veuillez patienter pendant le chargement de l'application.");
                 return;
             }
@@ -385,17 +388,24 @@
                 imageUrl
             };
 
+            console.log("Données de l'atelier à soumettre:", workshopData);
+            console.log("ID de l'atelier (pour modification):", workshopId);
+
             try {
                 if (workshopId) {
                     // Si un ID d'atelier existe, met à jour l'atelier existant
+                    console.log("Tentative de mise à jour de l'atelier avec ID:", workshopId);
                     const workshopDocRef = doc(db, `artifacts/${appId}/public/data/workshops`, workshopId);
                     await updateDoc(workshopDocRef, workshopData);
                     showMessageModal("Atelier mis à jour avec succès !");
+                    console.log("Atelier mis à jour avec succès !");
                 } else {
                     // Sinon, ajoute un nouvel atelier
+                    console.log("Tentative d'ajout d'un nouvel atelier.");
                     const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
                     await addDoc(workshopsRef, workshopData);
                     showMessageModal("Atelier ajouté avec succès !");
+                    console.log("Atelier ajouté avec succès !");
                 }
                 document.getElementById('workshop-form').reset(); // Réinitialise le formulaire
                 document.getElementById('workshop-id').value = ''; // Réinitialise l'ID caché
@@ -454,14 +464,17 @@
         function loadWorkshops() {
             if (!isAuthReady || !db) return;
 
+            console.log("Chargement des ateliers existants...");
             const workshopsRef = collection(db, `artifacts/${appId}/public/data/workshops`);
             onSnapshot(workshopsRef, (snapshot) => {
                 const existingWorkshopsList = document.getElementById('existing-workshops');
                 existingWorkshopsList.innerHTML = ''; // Nettoie la liste existante
                 if (snapshot.empty) {
                     existingWorkshopsList.innerHTML = '<p class="text-gray-600">Aucun atelier enregistré.</p>';
+                    console.log("Aucun atelier trouvé dans Firestore.");
                     return;
                 }
+                console.log("Ateliers trouvés:", snapshot.docs.length);
                 snapshot.forEach(doc => {
                     const workshop = doc.data();
                     const workshopId = doc.id;
@@ -558,6 +571,7 @@
         function loadGlobalAgenda() {
             if (!isAuthReady || !db) return;
 
+            console.log("Chargement des événements d'agenda existants...");
             const agendaRef = collection(db, `artifacts/${appId}/public/data/globalAgendaEvents`);
             onSnapshot(agendaRef, (snapshot) => {
                 const existingAgendaEventsList = document.getElementById('existing-agenda-events');
@@ -566,7 +580,9 @@
 
                 if (snapshot.empty) {
                     existingAgendaEventsList.innerHTML = '<p class="text-gray-600">Aucun événement d\'agenda enregistré dans Firestore.</p>';
+                    console.log("Aucun événement d'agenda trouvé dans Firestore.");
                 }
+                console.log("Événements d'agenda trouvés:", snapshot.docs.length);
                 snapshot.forEach(doc => {
                     const event = doc.data();
                     const eventId = doc.id;
@@ -598,6 +614,7 @@
 
             const reservationsList = document.getElementById('user-reservations');
             reservationsList.innerHTML = '<p class="text-gray-600">Chargement des réservations...</p>';
+            console.log("Chargement des réservations utilisateurs (note: implémentation simplifiée, ne liste pas toutes les réservations).");
 
             // NOTE IMPORTANTE : Pour récupérer *toutes* les réservations de *tous* les utilisateurs,
             // une approche plus robuste (comme une collection centralisée ou une fonction Cloud Function)
@@ -614,11 +631,14 @@
                 button.onclick = async (e) => {
                     const id = e.target.dataset.id;
                     const type = e.target.dataset.type;
+                    console.log(`Bouton Modifier cliqué pour l'ID: ${id}, Type: ${type}`);
+
                     if (type === 'workshop') {
                         const docRef = doc(db, `artifacts/${appId}/public/data/workshops`, id);
                         const docSnap = await getDoc(docRef);
                         if (docSnap.exists()) {
                             const data = docSnap.data();
+                            console.log("Données de l'atelier pour modification:", data);
                             document.getElementById('workshop-id').value = id;
                             document.getElementById('workshop-title').value = data.title;
                             document.getElementById('workshop-description').value = data.description;
@@ -626,12 +646,16 @@
                             document.getElementById('workshop-date').value = data.date ? new Date(data.date).toISOString().slice(0, 16) : '';
                             document.getElementById('workshop-image').value = data.imageUrl || '';
                             showMessageModal("Formulaire d'atelier pré-rempli pour modification.");
+                        } else {
+                            console.warn("Document atelier non trouvé pour ID:", id);
+                            showMessageModal("Atelier introuvable pour modification.");
                         }
                     } else if (type === 'agenda-event') {
                         const docRef = doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id);
                         const docSnap = await getDoc(docRef);
                         if (docSnap.exists()) {
                             const data = docSnap.data();
+                            console.log("Données de l'événement agenda pour modification:", data);
                             document.getElementById('agenda-event-id').value = id;
                             document.getElementById('agenda-title').value = data.title;
                             document.getElementById('agenda-description').value = data.description;
@@ -639,6 +663,9 @@
                             document.getElementById('agenda-date').value = data.date ? new Date(data.date).toISOString().slice(0, 16) : '';
                             document.getElementById('agenda-image').value = data.imageUrl || '';
                             showMessageModal("Formulaire d'événement agenda pré-rempli pour modification.");
+                        } else {
+                            console.warn("Document événement agenda non trouvé pour ID:", id);
+                            showMessageModal("Événement agenda introuvable pour modification.");
                         }
                     }
                 };
@@ -649,6 +676,7 @@
                 button.onclick = async (e) => {
                     const id = e.target.dataset.id;
                     const type = e.target.dataset.type;
+                    console.log(`Bouton Supprimer cliqué pour l'ID: ${id}, Type: ${type}`);
                     
                     // Utilise le modal personnalisé pour la confirmation de suppression
                     const confirmDelete = await showMessageModal("Êtes-vous sûr de vouloir supprimer cet élément ?", true);
@@ -656,16 +684,22 @@
                     if (confirmDelete) {
                         try {
                             if (type === 'workshop') {
+                                console.log("Tentative de suppression de l'atelier avec ID:", id);
                                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/workshops`, id));
                                 showMessageModal("Atelier supprimé avec succès !");
+                                console.log("Atelier supprimé avec succès !");
                             } else if (type === 'agenda-event') {
+                                console.log("Tentative de suppression de l'événement agenda avec ID:", id);
                                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/globalAgendaEvents`, id));
                                 showMessageModal("Événement agenda supprimé avec succès !");
+                                console.log("Événement agenda supprimé avec succès !");
                             }
                         } catch (error) {
                             console.error("Erreur lors de la suppression:", error);
                             showMessageModal("Erreur lors de la suppression: " + error.message);
                         }
+                    } else {
+                        console.log("Suppression annulée par l'utilisateur.");
                     }
                 };
             });

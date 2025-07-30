@@ -12,9 +12,10 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Styles pour le menu hamburger */
+        /* Styles pour le menu hamburger (déjà dans style.css, mais répété ici pour la clarté si style.css n'est pas chargé) */
+        /* Ces styles devraient idéalement être uniquement dans style.css */
         .hamburger-menu {
-            display: none; /* Caché par défaut, affiché sur mobile */
+            display: flex; /* Always visible */
             cursor: pointer;
             flex-direction: column;
             justify-content: space-around;
@@ -32,16 +33,17 @@
         }
 
         .nav-links {
-            display: flex; /* Affiché par défaut sur desktop */
+            display: flex; /* Displayed by default on desktop */
+            align-items: center; /* Align items vertically in the center */
         }
 
         @media (max-width: 768px) {
             .nav-links {
-                display: none; /* Caché sur mobile */
+                display: none; /* Hidden on mobile by default */
                 flex-direction: column;
                 position: absolute;
-                top: 64px; /* Hauteur du header */
-                right: 0;
+                top: 64px; /* Header height */
+                left: 0; /* Changed from right: 0 to left: 0 */
                 width: 100%;
                 background-color: #007bff;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -49,7 +51,7 @@
             }
 
             .nav-links.active {
-                display: flex;
+                display: flex; /* Shown when hamburger is active */
             }
 
             .nav-links a {
@@ -59,7 +61,7 @@
             }
 
             .hamburger-menu {
-                display: flex; /* Affiché sur mobile */
+                display: flex; /* Always displayed on mobile */
             }
         }
     </style>
@@ -75,18 +77,18 @@
 
     <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-md rounded-b-lg">
         <div class="container mx-auto flex justify-between items-center relative">
-            <h1 class="text-3xl font-bold">Administration Atelier DSR</h1>
-            
-            <!-- Menu Hamburger et Logo -->
+            <!-- Menu Hamburger et Logo à gauche -->
             <div class="flex items-center space-x-4">
-                <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
                 <div class="hamburger-menu" id="hamburger-menu">
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
                 </div>
+                <img src="https://srias.re/wp-content/uploads/2020/12/Destination-Sud-Reunion-png-1-min.png" alt="Logo Destination Sud Réunion" class="h-12 w-auto rounded-full shadow-lg">
             </div>
 
+            <h1 class="text-3xl font-bold">Administration Atelier DSR</h1>
+            
             <!-- Liens de navigation (cachés sur mobile, affichés via hamburger) -->
             <nav id="nav-links" class="nav-links">
                 <a href="index.html" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Accueil Utilisateur</a>
